@@ -55,11 +55,45 @@ public class EmailJobService {
         return "Email Jobs Generated Successfully";
     }
 
+
     public List<EmailJob> getAllJobs() {
         return emailJobRepository.findAll();
     }
 
     public List<EmailJob> getPendingJobs() {
         return emailJobRepository.findByStatus(EmailStatus.PENDING);
+    }
+    public String retryFailedJobs(Long campaignId) {
+
+        List<EmailJob> failedJobs = emailJobRepository
+                .findByCampaignIdAndStatus(campaignId, EmailStatus.FAILED);
+
+        if (failedJobs.isEmpty()) {
+            return "No failed emails found.";
+        }
+
+        for (EmailJob job : failedJobs) {
+            job.setStatus(EmailStatus.PENDING);
+            job.setRetryCount(0);
+            emailJobRepository.save(job);
+        }
+
+        return failedJobs.size() + " failed emails moved back to PENDING.";
+    }
+    public String retryFailedJob(Long jobId) {
+
+        EmailJob job = emailJobRepository
+                .findByIdAndStatus(jobId, EmailStatus.FAILED)
+                .orElseThrow(() -> new RuntimeException("Failed email job not found"));
+
+        job.setStatus(EmailStatus.PENDING);
+        job.setRetryCount(0);
+
+        emailJobRepository.save(job);
+
+        return "Email job " + jobId + " moved back to PENDING.";
+    }
+    public List<EmailJob> getFailedJobs() {
+        return emailJobRepository.findByStatus(EmailStatus.FAILED);
     }
 }

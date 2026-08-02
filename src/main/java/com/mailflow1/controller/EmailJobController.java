@@ -20,6 +20,18 @@ public class EmailJobController {
     public String generateJobs(@PathVariable Long campaignId) {
         return service.generateJobs(campaignId);
     }
+    @PostMapping("/retry/{campaignId}")
+    public String retryFailedJobs(@PathVariable Long campaignId) {
+        return service.retryFailedJobs(campaignId);
+    }
+    @PostMapping("/retry/job/{jobId}")
+    public String retryFailedJob(@PathVariable Long jobId) {
+        return service.retryFailedJob(jobId);
+    }
+    @GetMapping("/failed")
+    public List<EmailJob> getFailedJobs() {
+        return service.getFailedJobs();
+    }
 
     @GetMapping
     public List<EmailJob> getAllJobs() {

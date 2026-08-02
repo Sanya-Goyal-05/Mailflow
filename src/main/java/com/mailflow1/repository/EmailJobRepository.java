@@ -8,12 +8,15 @@ import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 public interface EmailJobRepository extends JpaRepository<EmailJob, Long> {
 
     List<EmailJob> findByStatus(EmailStatus status);
 
+
     long countByStatus(EmailStatus status);
+    Optional<EmailJob> findByIdAndStatus(Long id, EmailStatus status);
 
     @Query("""
     SELECT e FROM EmailJob e
@@ -33,4 +36,6 @@ public interface EmailJobRepository extends JpaRepository<EmailJob, Long> {
             @Param("status") EmailStatus status,
             @Param("time") LocalDateTime time
     );
+    List<EmailJob> findByCampaignIdAndStatus(Long campaignId, EmailStatus status);
+
 }
